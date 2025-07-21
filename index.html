@@ -1,0 +1,939 @@
+<html>
+  <head>
+    <title>Resource Cards</title>
+    <style>
+      /* General styles for a modern look */
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        background-color: #f4f7f6; /* Light background */
+        color: #333; /* Darker text for readability */
+        margin: 0;
+        padding: 0;
+      }
+
+      .mt-10 {
+        margin-top: 2.5rem; /* Equivalent to 10 in Tailwind */
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      .btnFilter {
+        display: inline-block;
+        font-weight: 100; /* Slightly bolder font */
+        padding: 0.25rem 0.75rem; /* Adjust padding for better touch targets */
+        margin: 0.25rem; /* Adjust vertical margin */
+        border-radius: 1.5rem; /* More rounded buttons */
+        border: 2px solid transparent; /* Initially transparent border */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Softer shadow */
+        color: #000000;
+        background-image: linear-gradient(
+          to bottom,
+          #ceead6,
+          #ceead6
+        ); /* Lighter blue/teal gradient */
+        cursor: pointer;
+        -webkit-appearance: button;
+        transition:
+          background-image 0.1s ease,
+          border-color 0.1s ease,
+          box-shadow 0.1s ease;
+        outline: none; /* Remove default focus outline */
+      }
+
+      .btnFilter:hover {
+        background-image: linear-gradient(to bottom, #34a853, #34a853); /* Darker hover gradient */
+        border-color: #0d652d; /* Border on hover */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Stronger hover shadow */
+      }
+
+      .btnFilter.selected {
+        border-color: #0d652d; /* Border on hover */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Stronger hover shadow */
+      }
+
+      .filter-label {
+        display: inline-block; /* Allows labels to sit side-by-side with buttons */
+        margin-right: 0.5rem; /* Adds space to the right of the label */
+        margin-top: 1px; 
+        margin-bottom: 1px;
+      }
+
+      .md\:my-0 {
+        /* Medium breakpoint and above: reset vertical margin */
+      }
+
+      .md\:mx-2 {
+        /* Medium breakpoint and above: add horizontal margin */
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+      }
+
+      #resourcesContainer {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center; /* Center items on smaller screens */
+        padding: 1rem;
+      }
+
+      #resource {
+        background-color: #fff; /* White card background */
+        border-radius: 0.5rem; /* Rounded corners for cards */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* Subtle card shadow */
+        overflow: hidden;
+        width: calc(100% - 2rem); /* Adjust width with margin */
+        margin: 1rem;
+        transition:
+          transform 0.2s ease-in-out,
+          box-shadow 0.2s ease-in-out;
+        display: flex; /* Use flexbox for card content layout */
+        flex-direction: column; /* Stack content vertically */
+      }
+
+      #resource:hover {
+        transform: translateY(-4px); /* Slight lift on hover */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      }
+
+      .rounded-md {
+        border-radius: 0.375rem; /* Tailwind default */
+      }
+
+      .bg-blue-100 {
+        background-color: #d2e3fc; /* Light blue background for header */
+      }
+
+      .text-blue-600 {
+        color: #4285f4; /* Blue text for header */
+      }
+
+      .m-4 {
+        margin: 1rem;
+      }
+
+      .p-2 {
+        padding: 0.5rem;
+      }
+
+      .flex-grow {
+        flex-grow: 1;
+      }
+
+      .flex {
+        display: flex;
+      }
+
+      .flex-col {
+        flex-direction: column;
+      }
+
+      .justify-between {
+        justify-content: space-between;
+      }
+
+      /* Modified Title Styles */
+      #resource .card-title {
+        font-weight: bold;
+        font-size: 0.8rem;
+        color: #174ea6; /* Changed color */
+        text-decoration: none; /* Remove default underline */
+        text-align: center; /* Centered text */
+        display: block; /* Make it a block element for centering */
+        padding: 0.25rem; /* Add some padding */
+      }
+
+      #resource .card-title:hover {
+        text-decoration: underline; /* Add underline on hover */
+      }
+
+      #description {
+        padding: 0 0.25rem 0.25rem; /* Adjusted padding */
+        color: #555; /* Slightly lighter description text */
+        flex-grow: 1; /* Allow description to take available space */
+        font-size: 0.75rem;
+      }
+
+      #tagsContainer {
+        padding: 0.25rem 0.25rem 0.25rem; /* Adjusted padding */
+        display: flex;
+        justify-content: center; /* Center tags below description */
+        flex-wrap: wrap;
+        gap: 0.1rem; /* Reduced gap between tags */
+      }
+
+      /* Modified Tag Styles */
+      #tagsContainer span {
+        display: inline-block;
+        background-color: #ceead6; /* Muted teal for tags */
+        color: #000; /* Changed font color to black */
+        border-radius: 1rem; /* Slightly less rounded */
+        padding: 0.1rem 0.1rem 0.1rem; /* Reduced padding */
+        font-size: 0.2rem; /* Reduced font size */
+        font-weight: 500;
+      }
+
+      /* Media query for 6 columns on larger screens */
+      @media (min-width: 1200px) {
+        #resource {
+          width: calc(16.666% - 2rem); /* Approximately 6 columns with margin */
+          margin: 0.5rem;
+        }
+
+        #resourcesContainer {
+          justify-content: flex-start; /* Align items to the start on larger screens */
+        }
+      }
+
+      /* Add a class to visually indicate selected buttons */
+      .btnFilter.selected {
+        @apply ring-2 ring-offset-2 ring-teal-400; /* Example: Add a ring */
+        /* You can adjust the styling as needed */
+      }
+
+      /* Media query for 4 columns on medium-large screens */
+      @media (min-width: 992px) and (max-width: 1199px) {
+        #resource {
+          width: calc(20% - 1rem); /* 4 columns with margin */
+          margin: 0.5rem;
+        }
+        #resourcesContainer {
+          justify-content: flex-start;
+        }
+      }
+
+      /* Media query for 3 columns on medium screens */
+      @media (min-width: 768px) and (max-width: 991px) {
+        #resource {
+          width: calc(33.333% - 2rem); /* 3 columns with margin */
+          margin: 0.5rem;
+        }
+        #resourcesContainer {
+          justify-content: flex-start;
+        }
+      }
+
+      /* Media query for 2 columns on small-medium screens */
+      @media (min-width: 576px) and (max-width: 767px) {
+        #resource {
+          width: calc(50% - 2rem); /* 2 columns with margin */
+          margin: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="text-center">
+  <p class="filter-label">Domain:</p>
+  <button id="Health" class="btnFilter"> Health </button>
+  <button id="Earth" class="btnFilter"> Earth </button>
+  <button id="Engineering" class="btnFilter"> Engineering and Physics </button>
+  <button id="Humanities" class="btnFilter">
+    Humanities
+  </button>
+  <button id="Computer" class="btnFilter">
+    Computer Science
+  </button>
+<p style="margin-top: 1px; margin-bottom: 1px;"></p>
+  <p class="filter-label">Type:</p>
+  <button id="Program" class="btnFilter">
+    Programs and Partnerships
+  </button>
+  <button id="Tool" class="btnFilter">
+    Tools and Platforms
+  </button>
+  <button id="Data" class="btnFilter">
+    Datasets
+  </button>
+  <button id="Knowledge" class="btnFilter">
+    Knowledge
+  </button>
+  <button id="all" class="btnFilter all-button mt-4"> All </button>
+</section>
+
+    <section
+      id="resourcesContainer"
+      class="w-full flex flex-wrap content-center justify-around mx-auto px-2 py-5 md:px-4 lg:px-10"
+    >
+      <template id="resourceTemplate">
+        <div id="resource" class="border rounded-lg p-4 mb-4 shadow-md bg-white flex flex-col">
+          <a id="title" href="#" target="_blank" class="card-title">Resource Title</a>
+          <p id="description" class="text-gray-700 mb-2 flex-grow">
+            Resource description goes here.
+          </p>
+          <div id="tagsContainer" class="flex flex-wrap gap-1"></div>
+        </div>
+      </template>
+    </section>
+
+    <script>
+      const resourcesContainer = document.querySelector("#resourcesContainer");
+      const resourceTemplate = document.querySelector("template");
+      const filterButtons = document.querySelectorAll(".btnFilter");
+      const allButton = document.getElementById("all");
+
+      // Use a Set to store selected tags for efficient adding and removing
+      let selectedTags = new Set();
+
+      const dataResources = [
+        {
+          title: "Google Arts and Culture Partnerships",
+          description: "Supports cultural institutions and digital preservation projects.",
+          link: "https://about.artsandculture.google.com/partners/",
+          tags: ["Program", "Humanities"],
+        },
+        {
+          title: "Sponsorship of Conferences and Events",
+          description:
+            "Google sponsors and participates in numerous academic conferences across various scientific disciplines.",
+          link: "https://about.google/brand-resource-center/guidance/sponsorships/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Natural Questions Dataset",
+          description: "A question answering dataset containing naturally occurring questions.",
+          link: "https://ai.google.com/research/NaturalQuestions",
+          tags: ["Data", "Computer"],
+        },
+        {
+          title: "ai.google",
+          description: "Portal to Google AI's research, applications, and principles.",
+          link: "https://ai.google/",
+          tags: ["Knowledge", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "AI for Social Good / AI Impact Challenge",
+          description:
+            "Initiatives supporting projects that use AI to address societal and environmental challenges.",
+          link: "https://ai.google/advancing-ai/social-impact/",
+          tags: ["Program", "Humanities"],
+        },
+        {
+          title: "Google AI Blog",
+          description: "Updates on Google's AI research and advancements.",
+          link: "https://ai.google/latest-news/",
+          tags: ["Knowledge", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "AlphaFold",
+          description:
+            "AI system for predicting protein structures (models and code often made available for research).",
+          link: "https://alphafold.ebi.ac.uk/",
+          tags: ["Tool", "Health", "Engineering"],
+        },
+        {
+          title: "AlphaMissense",
+          description: "Tool for predicting the pathogenicity of missense variants.",
+          link: "https://alphamissense.hegelab.org/",
+          tags: ["Tool", "Health", "Engineering"],
+        },
+        {
+          title: "Google Arts & Culture Platform",
+          description: "Cultural data and artifacts for humanities research.",
+          link: "https://artsandculture.google.com/",
+          tags: ["Data", "Humanities"],
+        },
+        {
+          title: "Google Books",
+          description: "Search within digitized books.",
+          link: "https://books.google.com/",
+          tags: ["Data", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Cloud Platform (GCP)",
+          description: "A comprehensive suite of cloud computing services.",
+          link: "https://cloud.google.com/",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "BigQuery",
+          description:
+            "Serverless data warehouse with integrated machine learning for large-scale data analysis using BigQuery and SQL.",
+          link: "https://cloud.google.com/bigquery",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "MedLM",
+          description: "Family of large language models for healthcare applications.",
+          link: "https://cloud.google.com/blog/topics/healthcare-life-sciences/introducing-medlm-for-the-healthcare-industry",
+          tags: ["Tool", "Health"],
+        },
+        {
+          title: "GCP Public Datasets",
+          description: "Curated, publicly available datasets optimized for analysis in the cloud.",
+          link: "https://cloud.google.com/datasets",
+          tags: ["Data", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Healthcare API",
+          description: "Secure and scalable API for healthcare data interoperability.",
+          link: "https://cloud.google.com/healthcare-api",
+          tags: ["Tool", "Health"],
+        },
+        {
+          title: "Google Kubernetes Engine (GKE)",
+          description: "Managed Kubernetes service for containerized applications.",
+          link: "https://cloud.google.com/kubernetes-engine?hl=en",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Life Sciences API",
+          description:
+            "Tools for storing, analyzing, and sharing genomics and other life sciences data.",
+          link: "https://cloud.google.com/life-sciences-solutions?hl=en",
+          tags: ["Tool", "Health"],
+        },
+        {
+          title: "Compute Engine",
+          description:
+            "Scalable virtual machines for high-performance computing and EC2 equivalent workloads.",
+          link: "https://cloud.google.com/products/compute",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Cloud SQL",
+          description:
+            "Managed relational databases (MySQL, PostgreSQL, SQL Server) for structured data.",
+          link: "https://cloud.google.com/sql",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Cloud Storage",
+          description: "Secure and scalable object storage for datasets.",
+          link: "https://cloud.google.com/storage",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Vertex AI",
+          description: "Unified platform for building, deploying, and managing ML models.",
+          link: "https://cloud.google.com/vertex-ai",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "CodeLabs",
+          description: "Guided tutorials and labs covering Google-adjacent technologies.",
+          link: "https://codelabs.developers.google.com/",
+          tags: ["Knowledge", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Colaboratory (Colab)",
+          description: "Free Jupyter Notebook environment with GPU and TPU access.",
+          link: "https://colab.google/",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Datacommons.org",
+          description: "Tool for visualizing and exploring public datasets.",
+          link: "https://datacommons.org/",
+          tags: ["Data", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Dataset Search",
+          description: "Search engine for publicly available datasets.",
+          link: "https://datasetsearch.research.google.com/",
+          tags: ["Data", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "DeepMind.google",
+          description: "Website showcasing DeepMind's research breakthroughs and publications.",
+          link: "https://deepmind.google/",
+          tags: ["Knowledge", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "WeatherNext",
+          description: "AI model for more accurate and faster weather forecasting.",
+          link: "https://deepmind.google/technologies/weathernext/",
+          tags: ["Tool", "Earth"],
+        },
+        {
+          title: "Google Developers",
+          description:
+            "Platform providing documentation, tutorials, and resources for using Google's technologies in research.",
+          link: "https://developers.google.com/",
+          tags: ["Knowledge", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Developers Experts",
+          description:
+            "Individuals who are experts in Google technologies and actively contribute to the developer community.",
+          link: "https://developers.google.com/community/experts",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "DevLibrary",
+          description: "Open Source tools built with Google-curated technologies.",
+          link: "https://devlibrary.withgoogle.com/products/ml?sort=added",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Forms",
+          description: "Tool for creating surveys and data collection.",
+          link: "https://docs.google.com/forms/",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "JAX",
+          description:
+            "Library for numerical computation with automatic differentiation and XLA compilation.",
+          link: "https://docs.jax.dev/en/latest/",
+          tags: ["Tool", "Computer"],
+        },
+        {
+          title: "Google Drive",
+          description: "Cloud storage and file sharing.",
+          link: "https://drive.google.com/corp/drive/my-drive",
+          tags: ["Data", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Earth Engine",
+          description: "Cloud-based platform for analyzing geospatial data at scale.",
+          link: "https://earthengine.google.com/",
+          tags: ["Tool", "Earth"],
+        },
+        {
+          title: "Google Earth Engine for Research",
+          description: "Supports noncommercial and research using the Earth Engine platform.",
+          link: "https://earthengine.google.com/noncommercial/",
+          tags: ["Program", "Earth"],
+        },
+        {
+          title: "Collaborations with Universities and Higher Ed",
+          description: "Various engagement opportunities.",
+          link: "https://edu.google.com/intl/ALL_au/resources/institution-type/higher-ed-solutions/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Cloud Research Credits Program",
+          description: "Provides GCP credits to researchers for their cloud computing needs.",
+          link: "https://edu.google.com/programs/credits/research/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Fitbit (for Research)",
+          description:
+            "Wearable devices and platform for collecting health and activity data in research studies.",
+          link: "https://enterprise.fitbit.com/researchers/",
+          tags: ["Tool", "Health", "Humanities"],
+        },
+        {
+          title: "Flax",
+          description:
+            "A neural network library for JAX designed for flexibility and high performance.",
+          link: "https://flax.readthedocs.io/en/latest/",
+          tags: ["Tool", "Computer"],
+        },
+        {
+          title: "DeepMind's Open Source",
+          description:
+            "DeepMind often releases code and datasets related to their research (e.g., AlphaFold, Sonnet).",
+          link: "https://github.com/google-deepmind",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Research Open Source",
+          description: "Repositories of open-source research code.",
+          link: "https://github.com/google-research",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Population Dynamics Foundation Model",
+          description: "AI model for understanding and forecasting population changes.",
+          link: "https://github.com/google-research/population-dynamics",
+          tags: ["Tool", "Earth", "Humantities"],
+        },
+        {
+          title: "Model Search",
+          description: "Repository of pre-trained machine learning models.",
+          link: "https://github.com/google/model_search",
+          tags: ["Data", "Computer"],
+        },
+        {
+          title: "Google Groups",
+          description: "Can serve as platforms for research community discussions mailing lists.",
+          link: "https://groups.google.com/",
+          tags: ["Knowledge", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "COVID-19 Open Data",
+          description: "Publicly available dataset related to the COVID-19 pandemic.",
+          link: "https://health.google.com/covid-19/open-data/",
+          tags: ["Data", "Health"],
+        },
+        {
+          title: "Google Health Studies App",
+          description: "Platform for conducting health research studies using mobile devices.",
+          link: "https://health.google/consumers/health-studies/",
+          tags: ["Data", "Health"],
+        },
+        {
+          title: "health.google",
+          description:
+            "Collective Health related research from clinics, research, and engineering app implementations.",
+          link: "https://health.google/health-research/",
+          tags: ["Program", "Health"],
+        },
+        {
+          title: "Environmental Insights Explorer",
+          description: "Access Google\u2019s mapping data and ML capabilities.",
+          link: "https://insights.sustainability.google/",
+          tags: ["Tool", "Earth", "Humantities"],
+        },
+        {
+          title: "Keras",
+          description:
+            "High-level API for building and training neural networks (often used with TensorFlow).",
+          link: "https://keras.io/",
+          tags: ["Tool", "Computer"],
+        },
+        {
+          title: "Looker Studio (formerly Google Data Studio)",
+          description: "Data visualization and dashboarding tool.",
+          link: "https://lookerstudio.google.com/",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "MediaPipe",
+          description: "Framework for building multimodal applied machine learning pipelines.",
+          link: "https://mediapipe-studio.webapps.google.com/home",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "NotebookLM",
+          description:
+            "An experimental AI-powered notebook to help understand and explore documents.",
+          link: "https://notebooklm.google/",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Open Source",
+          description: "Supports open-source projects.",
+          link: "https://opensource.google/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Cloud Partner",
+          description: "Various benefits and partnership opportunities.",
+          link: "https://partners.cloud.google.com/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Patents",
+          description: "Search engine for patents.",
+          link: "https://patents.google.com/",
+          tags: ["Knowledge", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Public Sector",
+          description: "Google participates in research projects funded by government agencies.",
+          link: "https://publicsector.google/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "AudioSet",
+          description: "A large-scale dataset of labeled audio events.",
+          link: "https://research.google.com/audioset/",
+          tags: ["Data", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "research.google",
+          description:
+            "Portal to Google's research publications, projects, code, and efforts across various fields.",
+          link: "https://research.google/",
+          tags: ["Knowledge", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Ionosphere",
+          description:
+            "Project focused on understanding and predicting space weather using Android phones.",
+          link: "https://research.google/blog/mapping-the-ionosphere-with-the-power-of-android/",
+          tags: ["Tool", "Earth", "Engineering"],
+        },
+        {
+          title: "Joint Research Centers",
+          description:
+            "Google sometimes establishes joint research centers with universities focused on specific areas.",
+          link: "https://research.google/programs-and-events/featured-research-collaborations/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Academic Research Awards",
+          description:
+            "Supports academic research in areas of mutual interest to Google and the academic community.",
+          link: "https://research.google/programs-and-events/google-academic-research-awards/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google PhD Fellowship Program",
+          description:
+            "Provides funding and mentorship to outstanding PhD students in computer science and related fields.",
+          link: "https://research.google/programs-and-events/phd-fellowship/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Research Scholar Program",
+          description: "Supports early-career professors engaged in innovative research.",
+          link: "https://research.google/programs-and-events/research-scholar-program/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Research Internships",
+          description: "Offers research experience to students in various fields.",
+          link: "https://research.google/programs-and-events/student-engagement/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Scholar",
+          description: "Find research journal publications, curate and host your own profile.",
+          link: "https://scholar.google.com.au/",
+          tags: ["Knowledge", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Sites",
+          description: "Simple website builder for research project pages.",
+          link: "https://sites.google.com/",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "TPU Research Cloud (TRC) Program",
+          description:
+            "Access to Tensor Processing Units (TPU) resources for accelerating ML workloads for research",
+          link: "https://sites.research.google/trc/about/",
+          tags: ["Program", "Computer"],
+        },
+        {
+          title: "Open Images Dataset",
+          description:
+            "A large-scale dataset of images with object bounding boxes and visual relationships.",
+          link: "https://storage.googleapis.com/openimages/web/index.html",
+          tags: ["Data", "Computer"],
+        },
+        {
+          title: "Google Summer of Code",
+          description:
+            "Global program offering stipends to students for open-source software development projects.",
+          link: "https://summerofcode.withgoogle.com/",
+          tags: ["Program", "Computer"],
+        },
+        {
+          title: "Climate Change and Sustainability Research Initiatives",
+          description: "Partnerships focused on using technology to address climate change.",
+          link: "https://sustainability.google/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Research Engagement Transparency",
+          description: "Data, tools, publications, programs, outreach.",
+          link: "https://transparency.google/intl/en_us/researcher-engagement/",
+          tags: ["Knowledge", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Verily",
+          description:
+            "Partnerships with hospitals, research institutions, and biotech companies for healthcare.",
+          link: "https://verily.com/",
+          tags: ["Program", "Health"],
+        },
+        {
+          title: "Google Workspace (formerly G Suite)",
+          description:
+            "Collaborative tools for communication, analysis, and presentation like Gmail, Calendar, Docs, Sheets, Slides, Meet, and Chat.",
+          link: "https://workspace.google.com/intl/en_au/",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Android",
+          description: "mobile phone framework",
+          link: "https://www.android.com/everyone/research/",
+          tags: ["Tool", "Computer"],
+        },
+        {
+          title: "CloudSkillsBoost",
+          description: "Hands on learning platform for cloud-related skills and coding.",
+          link: "https://www.cloudskillsboost.google/",
+          tags: ["Knowledge", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Alerts",
+          description: "Monitor the web for new content on research topics.",
+          link: "https://www.google.com.au/alerts",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Search",
+          description:
+            "General web search for research-related information and for grounding AI models.",
+          link: "https://www.google.com/",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Alerts",
+          description:
+            "A platform for monitoring new research publications and news related to specific topics.",
+          link: "https://www.google.com/alerts",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google Ad Grants",
+          description: "Supports not-for-profit projects.",
+          link: "https://www.google.com/grants/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Google.org Impact Challenge",
+          description: "Funds non-profit organizations working on pressing global issues.",
+          link: "https://www.google.org/opportunities/",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Kaggle",
+          description: "Platform for data science competitions, datasets, and community.",
+          link: "https://www.kaggle.com/",
+          tags: ["Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Kaggle Datasets",
+          description: "A vast repository of publicly available datasets.",
+          link: "https://www.kaggle.com/datasets",
+          tags: ["Data", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Industry Consortia and Alliances",
+          description:
+            "Various industry consortia focused on advancing specific research areas (e.g., AI, quantum computing, healthcare, climate).",
+          link: "https://www.minister.industry.gov.au/ministers/husic/media-releases/teaming-google-tackle-climate-change-indo-pacific-region",
+          tags: ["Program", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "TensorFlow",
+          description: "Open-source machine learning framework.",
+          link: "https://www.tensorflow.org/",
+          tags: ["Tool", "Computer"],
+        },
+        {
+          title: "TensorFlow Datasets",
+          description: "Collection of ready-to-use datasets for TensorFlow.",
+          link: "https://www.tensorflow.org/datasets",
+          tags: ["Data", "Computer"],
+        },
+        {
+          title: "TensorFlow Hub",
+          description: "Repository of pre-trained model components.",
+          link: "https://www.tensorflow.org/hub",
+          tags: ["Data", "Computer"],
+        },
+        {
+          title: "YouTube",
+          description:
+            "Channels for sharing research talks, presentations, and educational content.",
+          link: "https://www.youtube.com/channel/UCtFRv9O2AHqOZjjynzrv-xg",
+          tags: ["Knowledge", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Health AI for Develper Foundations",
+          description:
+            "a collection of open-weight models and companion resources to help developers build AI models for healthcare",
+          link: "https://developers.google.com/health-ai-developer-foundations",
+          tags: ["Tool", "Health"],
+        },
+      ];
+
+      function renderResources() {
+        clearContainer(resourcesContainer);
+
+        let resourcesToDisplay = dataResources;
+
+        // If no tags are selected, show all resources.
+        // Otherwise, filter based on selected tags.
+        if (selectedTags.size > 0) {
+          resourcesToDisplay = dataResources.filter((resourceData) =>
+            // Check if the resource has at least one tag that is in the selectedTags set
+            resourceData.tags.some((tag) => selectedTags.has(tag)),
+          );
+        }
+
+        // Iterate through the resources to display and append them to the container
+        resourcesToDisplay.forEach((resourceData) => {
+          const resourceCard = copyTemplateCard(resourceData);
+          resourcesContainer.appendChild(resourceCard);
+        });
+      }
+
+      function clearContainer(container) {
+        container.innerHTML = "";
+      }
+
+      function copyTemplateCard(resourceData) {
+        const resourceTemplateContent = document.importNode(resourceTemplate.content, true);
+        const card = resourceTemplateContent.querySelector("#resource");
+
+        // Set Title
+        const title = card.querySelector("#title");
+        title.innerText = resourceData.title;
+        title.href = resourceData.link;
+
+        // Set Description
+        const description = card.querySelector("#description");
+        description.innerText = resourceData.description;
+
+        // Set Tags
+        const tagsContainer = card.querySelector("#tagsContainer");
+        resourceData.tags.forEach((resourceDataTag) => {
+            const individualTag = document.createElement("span");
+            individualTag.style.backgroundColor = "#ceead6"; /* Muted teal */
+            individualTag.style.color = "#000"; /* Black font */
+            individualTag.style.borderRadius = "0.5rem";
+            individualTag.style.padding = "0.25rem 0.25rem";
+            individualTag.style.fontSize = "0.5rem";
+            individualTag.style.fontWeight = "500";
+            individualTag.style.display = "inline-block";
+            individualTag.textContent = `#${resourceDataTag}`; // Use textContent for security
+
+            tagsContainer.appendChild(individualTag);
+        });
+
+        return card;
+      }
+
+      function handleFilterButtonClick() {
+        const tag = this.id;
+
+        if (tag === 'all') {
+          // If 'All' is clicked, clear all selected tags and remove 'selected' class
+          selectedTags.clear();
+          filterButtons.forEach(btn => btn.classList.remove('selected'));
+          allButton.classList.add('selected'); // Optionally keep 'All' selected visually
+        } else {
+          // If another tag is clicked
+          allButton.classList.remove('selected'); // Deselect 'All'
+
+          if (selectedTags.has(tag)) {
+            // If the tag is already selected, deselect it
+            selectedTags.delete(tag);
+            this.classList.remove('selected');
+          } else {
+            // If the tag is not selected, select it
+            selectedTags.add(tag);
+            this.classList.add('selected');
+          }
+
+          // If no tags are selected after clicking a tag other than 'all', select 'all'
+          if (selectedTags.size === 0) {
+             allButton.classList.add('selected');
+          }
+        }
+
+        renderResources();
+      }
+
+      // Add event listeners to filter buttons
+      filterButtons.forEach(function (btn) {
+        btn.addEventListener("click", handleFilterButtonClick);
+      });
+
+      // Initial render with all resources
+      allButton.classList.add('selected'); // Mark 'All' as selected initially
+      renderResources();
+    </script>
+  </body>
+</html>
