@@ -15,6 +15,8 @@ function renderResources() {
     return domainMatch && typeMatch;
   });
 
+  resourcesToDisplay.sort((a, b) => a.link.localeCompare(b.link));
+  
   resourcesToDisplay.forEach((resourceData) => {
     const resourceCard = copyTemplateCard(resourceData);
     resourcesContainer.appendChild(resourceCard);
