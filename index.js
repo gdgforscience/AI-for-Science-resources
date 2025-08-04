@@ -59,7 +59,6 @@ function copyTemplateCard(resourceData) {
   return card;
 }
 
-// In a more complex app, we'd use a state management object
 domainFilters.forEach(btn => {
     btn.addEventListener("click", function() {
         const tag = this.id;
