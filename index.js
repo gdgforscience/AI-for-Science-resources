@@ -47,25 +47,30 @@ async function copyTemplateCard(resourceData) {
   title.innerText = resourceData.title;
   title.href = resourceData.link;
 
+  const imageLink = card.querySelector("#imageLink");
+  imageLink.href = resourceData.link;
+  imageLink.target = "_blank";
+
   const previewImage = card.querySelector("#previewImage");
   const hostname = new URL(resourceData.link).hostname;
   const fallbackImage = `https://www.google.com/s2/favicons?domain=${hostname}&sz=128`;
 
-  try {
-    const corsProxy = "https://cors-anywhere.herokuapp.com/";
-    const preview = await linkPreview.getLinkPreview(
-      `${corsProxy}${resourceData.link}`
-    );
-    if (preview.images && preview.images.length > 0) {
-      previewImage.src = preview.images[0];
-    } else {
-      previewImage.src = fallbackImage;
-    }
-  } catch (error) {
-    console.error("Failed to get link preview", error);
-    previewImage.src = fallbackImage;
-  }
+  // try {
+  //   const corsProxy = "https://cors-anywhere.herokuapp.com/";
+  //   const preview = await linkPreviewGenerator.getLinkPreview(
+  //     `${corsProxy}${resourceData.link}`
+  //   );
+  //   if (preview.images && preview.images.length > 0) {
+  //     previewImage.src = preview.images[0];
+  //   } else {
+  //     previewImage.src = fallbackImage;
+  //   }
+  // } catch (error) {
+  //   console.error("Failed to get link preview", error);
+  //   previewImage.src = fallbackImage;
+  // }
 
+  previewImage.src = fallbackImage;
   previewImage.alt = resourceData.title;
 
   const description = card.querySelector("#description");
