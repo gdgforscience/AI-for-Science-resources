@@ -6,18 +6,29 @@ const typeFilters = document.querySelectorAll("#type-filters .btnFilter");
 let selectedDomain = null;
 let selectedType = null;
 
-function renderResources() {
+async function renderResources() {
   clearContainer(resourcesContainer);
 
   let resourcesToDisplay = dataResources.filter((resourceData) => {
-    const domainMatch = selectedDomain ? resourceData.tags.includes(selectedDomain) : true;
-    const typeMatch = selectedType ? resourceData.tags.includes(selectedType) : true;
+    const domainMatch = selectedDomain
+      ? resourceData.tags.includes(selectedDomain)
+      : true;
+    const typeMatch = selectedType
+      ? resourceData.tags.includes(selectedType)
+      : true;
     return domainMatch && typeMatch;
   });
 
-  resourcesToDisplay.forEach((resourceData) => {
-    const resourceCard = copyTemplateCard(resourceData);
-    resourcesContainer.appendChild(resourceCard);
+  resourcesToDisplay.sort((a, b) => a.link.localeCompare(b.link));
+  
+  const cardPromises = resourcesToDisplay.map((resourceData) =>
+    copyTemplateCard(resourceData)
+  );
+
+  const cards = await Promise.all(cardPromises);
+  cards.forEach((card) => {
+    resourcesContainer.appendChild(card);
+
   });
 }
 
@@ -25,17 +36,41 @@ function clearContainer(container) {
   container.innerHTML = "";
 }
 
-function copyTemplateCard(resourceData) {
-  const resourceTemplateContent = document.importNode(resourceTemplate.content, true);
+async function copyTemplateCard(resourceData) {
+  const resourceTemplateContent = document.importNode(
+    resourceTemplate.content,
+    true
+  );
   const card = resourceTemplateContent.querySelector("#resource");
 
   const title = card.querySelector("#title");
   title.innerText = resourceData.title;
   title.href = resourceData.link;
 
+  const imageLink = card.querySelector("#imageLink");
+  imageLink.href = resourceData.link;
+  imageLink.target = "_blank";
+
   const previewImage = card.querySelector("#previewImage");
   const hostname = new URL(resourceData.link).hostname;
-  previewImage.src = `https://www.google.com/s2/favicons?domain=${hostname}&sz=128`;
+  const fallbackImage = `https://www.google.com/s2/favicons?domain=${hostname}&sz=128`;
+
+  // try {
+  //   const corsProxy = "https://cors-anywhere.herokuapp.com/";
+  //   const preview = await linkPreviewGenerator.getLinkPreview(
+  //     `${corsProxy}${resourceData.link}`
+  //   );
+  //   if (preview.images && preview.images.length > 0) {
+  //     previewImage.src = preview.images[0];
+  //   } else {
+  //     previewImage.src = fallbackImage;
+  //   }
+  // } catch (error) {
+  //   console.error("Failed to get link preview", error);
+  //   previewImage.src = fallbackImage;
+  // }
+
+  previewImage.src = fallbackImage;
   previewImage.alt = resourceData.title;
 
   const description = card.querySelector("#description");
