@@ -19,6 +19,8 @@ async function renderResources() {
     return domainMatch && typeMatch;
   });
 
+  resourcesToDisplay.sort((a, b) => a.link.localeCompare(b.link));
+  
   const cardPromises = resourcesToDisplay.map((resourceData) =>
     copyTemplateCard(resourceData)
   );
@@ -26,6 +28,7 @@ async function renderResources() {
   const cards = await Promise.all(cardPromises);
   cards.forEach((card) => {
     resourcesContainer.appendChild(card);
+
   });
 }
 
