@@ -33,6 +33,11 @@ function copyTemplateCard(resourceData) {
   title.innerText = resourceData.title;
   title.href = resourceData.link;
 
+  const previewImage = card.querySelector("#previewImage");
+  const hostname = new URL(resourceData.link).hostname;
+  previewImage.src = `https://www.google.com/s2/favicons?domain=${hostname}&sz=128`;
+  previewImage.alt = resourceData.title;
+
   const description = card.querySelector("#description");
   description.innerText = resourceData.description;
 
@@ -54,7 +59,6 @@ function copyTemplateCard(resourceData) {
   return card;
 }
 
-// In a more complex app, we'd use a state management object
 domainFilters.forEach(btn => {
     btn.addEventListener("click", function() {
         const tag = this.id;
