@@ -558,4 +558,32 @@ const dataResources = [
           link: "https://developers.google.com/health-ai-developer-foundations",
           tags: ["Tool", "Health"],
         },
+                {
+          title: "AI literacy tools",
+          description:
+            "Resources and trainings that empower students, educators, and families to use AI",
+          link: "https://ai.google/literacy",
+          tags: ["Knowledge", "Tool", "Health", "Earth", "Engineering", "Humanities", "Computer"],
+        },
+        {
+          title: "Aeneas AI model",
+          description:
+            "generative AI models designed to assist historians to contextualise, restore, and attribute ancient texts",
+          link: "https://predictingthepast.com/",
+          tags: ["Tool", "Humanities"],
+        },
+        {
+          title: "AlphaGenome",
+          description:
+            "Explore multimodal genomic predictions",
+          link: "https://www.alphagenomedocs.com/",
+          tags: ["Tool", "Health"],
+        },
+        {
+          title: "AlphaEarth",
+          description:
+            "AlphaEarth Foundational model and the Satellite Embedding dataset for 10m resolution for geospatial observations",
+          link: "https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_SATELLITE_EMBEDDING_V1_ANNUAL#description",
+          tags: ["Data", "Earth"],
+        },
       ];
