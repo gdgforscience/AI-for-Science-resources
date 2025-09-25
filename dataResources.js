@@ -586,4 +586,9 @@ const dataResources = [
           link: "https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_SATELLITE_EMBEDDING_V1_ANNUAL#description",
           tags: ["Data", "Earth"],
         },
+        {
+                title: "Agricultural Understanding platform",
+                descritpion: "Organise the agricultural information of the world at an individual farm field level and provide it as a base layer for stakeholders in the agri ecosystem",
+                link: "https://agri.withgoogle.com/",
+                tags: ["Data", "Earth", "Tool"]
       ];
